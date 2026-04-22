@@ -1,17 +1,17 @@
-From 87c9e57548bc0aef15d67967a68cc9185216361d Mon Sep 17 00:00:00 2001
-From: Patrick Hunziker <patrick@hunziker.io>
-Date: Sat, 8 Nov 2025 11:31:15 +0100
-Subject: [PATCH] [PATCH] Patched for Raspberry Pi 5
+From e1d31bdf963c84d8af154775cad1503145ab6b2f Mon Sep 17 00:00:00 2001
+From: Conall O'Brien <conall@conall.net>
+Date: Wed, 22 Apr 2026 10:00:25 +0100
+Subject: [PATCH] Patched for Raspberry Pi 5
 
 ---
- hack/modules-arm64.txt | 343 +++++++++++++++++++----------------------
- 1 file changed, 160 insertions(+), 183 deletions(-)
+ hack/modules-arm64.txt | 364 ++++++++++++++++++-----------------------
+ 1 file changed, 162 insertions(+), 202 deletions(-)
 
 diff --git a/hack/modules-arm64.txt b/hack/modules-arm64.txt
-index 6c48a7465..95c3ee669 100644
+index 8df29effd..09c98de0c 100644
 --- a/hack/modules-arm64.txt
 +++ b/hack/modules-arm64.txt
-@@ -1,213 +1,190 @@
+@@ -1,238 +1,198 @@
 +modules.builtin.bin
 +modules.builtin.modinfo
 +modules.builtin.alias.bin
@@ -25,6 +25,7 @@ index 6c48a7465..95c3ee669 100644
 +modules.softdep
 +modules.symbols
 +modules.devname
+ kernel/arch/arm64/lib/xor-neon.ko
 +kernel/crypto/xor.ko
 +kernel/crypto/async_tx/async_xor.ko
  kernel/crypto/async_tx/async_memcpy.ko
@@ -32,6 +33,7 @@ index 6c48a7465..95c3ee669 100644
  kernel/crypto/async_tx/async_raid6_recov.ko
  kernel/crypto/async_tx/async_tx.ko
 -kernel/crypto/async_tx/async_xor.ko
+-kernel/crypto/hkdf.ko
 -kernel/crypto/xor.ko
 -kernel/drivers/acpi/video.ko
 -kernel/drivers/ata/ahci.ko
@@ -45,6 +47,7 @@ index 6c48a7465..95c3ee669 100644
 +kernel/crypto/xxhash_generic.ko
 +kernel/crypto/zstd.ko
 +kernel/net/ipv4/ip_gre.ko
++kernel/net/ipv6/ip6_gre.ko
 +kernel/net/tls/tls.ko
 +kernel/net/openvswitch/vport-gre.ko
 +kernel/drivers/infiniband/sw/rxe/rdma_rxe.ko
@@ -53,29 +56,29 @@ index 6c48a7465..95c3ee669 100644
 +kernel/drivers/infiniband/hw/hns/hns-roce-hw-v2.ko
 +kernel/drivers/misc/bcm2835_smi.ko
  kernel/drivers/crypto/tegra/tegra-se.ko
--kernel/drivers/gpu/drm/display/drm_dp_aux_bus.ko
--kernel/drivers/gpu/drm/drm_buddy.ko
--kernel/drivers/gpu/drm/drm_exec.ko
--kernel/drivers/gpu/drm/drm_suballoc_helper.ko
 +kernel/drivers/acpi/video.ko
 +kernel/drivers/gpu/drm/vc4/vc4.ko
- kernel/drivers/gpu/drm/drm_ttm_helper.ko
--kernel/drivers/gpu/drm/drm_vram_helper.ko
--kernel/drivers/gpu/drm/hisilicon/hibmc/hibmc-drm.ko
++kernel/drivers/gpu/drm/drm_ttm_helper.ko
 +kernel/drivers/gpu/drm/ttm/ttm.ko
 +kernel/drivers/gpu/drm/drm_suballoc_helper.ko
- kernel/drivers/gpu/drm/scheduler/gpu-sched.ko
-+kernel/drivers/gpu/drm/drm_buddy.ko
- kernel/drivers/gpu/drm/tegra/tegra-drm.ko
--kernel/drivers/gpu/drm/ttm/ttm.ko
++kernel/drivers/gpu/drm/scheduler/gpu-sched.ko
+ kernel/drivers/gpu/drm/drm_buddy.ko
+ kernel/drivers/gpu/drm/drm_exec.ko
+ kernel/drivers/gpu/drm/drm_gpuvm.ko
+ kernel/drivers/gpu/drm/drm_panel_backlight_quirks.ko
+-kernel/drivers/gpu/drm/drm_suballoc_helper.ko
+-kernel/drivers/gpu/drm/drm_ttm_helper.ko
++kernel/drivers/gpu/drm/tegra/tegra-drm.ko
 +kernel/drivers/gpu/drm/amd/amdxcp/amdxcp.ko
 +kernel/drivers/gpu/drm/amd/amdgpu/amdgpu.ko
-+kernel/drivers/gpu/drm/drm_vram_helper.ko
-+kernel/drivers/gpu/drm/hisilicon/hibmc/hibmc-drm.ko
+ kernel/drivers/gpu/drm/drm_vram_helper.ko
+ kernel/drivers/gpu/drm/hisilicon/hibmc/hibmc-drm.ko
+-kernel/drivers/gpu/drm/scheduler/gpu-sched.ko
+-kernel/drivers/gpu/drm/tegra/tegra-drm.ko
+-kernel/drivers/gpu/drm/ttm/ttm.ko
 +kernel/drivers/gpu/drm/panfrost/panfrost.ko
 +kernel/drivers/gpu/drm/display/drm_dp_aux_bus.ko
 +kernel/drivers/gpu/drm/v3d/v3d.ko
-+kernel/drivers/gpu/drm/drm_exec.ko
  kernel/drivers/gpu/host1x/host1x.ko
 -kernel/drivers/hid/hid-a4tech.ko
 -kernel/drivers/hid/hid-apple.ko
@@ -108,12 +111,15 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/infiniband/hw/mlx4/mlx4_ib.ko
 -kernel/drivers/infiniband/hw/mlx5/mlx5_ib.ko
 -kernel/drivers/infiniband/sw/rxe/rdma_rxe.ko
+-kernel/drivers/irqchip/irq-bcm2712-mip.ko
 -kernel/drivers/irqchip/irq-imx-mu-msi.ko
+-kernel/drivers/leds/led-class-multicolor.ko
 -kernel/drivers/mailbox/bcm-flexrm-mailbox.ko
 -kernel/drivers/md/bcache/bcache.ko
 -kernel/drivers/md/dm-bio-prison.ko
 -kernel/drivers/md/dm-cache-smq.ko
 -kernel/drivers/md/dm-cache.ko
+-kernel/drivers/md/dm-integrity.ko
 -kernel/drivers/md/dm-multipath.ko
 -kernel/drivers/md/dm-raid.ko
 -kernel/drivers/md/dm-round-robin.ko
@@ -133,6 +139,7 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/mmc/host/sdhci-pci.ko
 -kernel/drivers/mmc/host/sdhci-pltfm.ko
 -kernel/drivers/mmc/host/sdhci-tegra.ko
+-kernel/drivers/mmc/host/sdhci-uhs2.ko
 -kernel/drivers/mmc/host/sdhci-xenon-driver.ko
 +kernel/drivers/nvme/host/nvme-rdma.ko
 +kernel/drivers/nvme/target/nvme-loop.ko
@@ -189,12 +196,16 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/net/ethernet/intel/i40e/i40e.ko
 -kernel/drivers/net/ethernet/intel/iavf/iavf.ko
 -kernel/drivers/net/ethernet/intel/ice/ice.ko
+-kernel/drivers/net/ethernet/intel/idpf/idpf.ko
 -kernel/drivers/net/ethernet/intel/igb/igb.ko
 -kernel/drivers/net/ethernet/intel/igbvf/igbvf.ko
 -kernel/drivers/net/ethernet/intel/igc/igc.ko
 -kernel/drivers/net/ethernet/intel/ixgbe/ixgbe.ko
 -kernel/drivers/net/ethernet/intel/ixgbevf/ixgbevf.ko
+-kernel/drivers/net/ethernet/intel/libeth/libeth_xdp.ko
 -kernel/drivers/net/ethernet/intel/libeth/libeth.ko
+-kernel/drivers/net/ethernet/intel/libie/libie_adminq.ko
+-kernel/drivers/net/ethernet/intel/libie/libie_fwlog.ko
 -kernel/drivers/net/ethernet/intel/libie/libie.ko
 -kernel/drivers/net/ethernet/marvell/sky2.ko
 -kernel/drivers/net/ethernet/mellanox/mlx4/mlx4_core.ko
@@ -220,6 +231,7 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-meson.ko
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.ko
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-qcom-ethqos.ko
+-kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-renesas-gbeth.ko
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-rk.ko
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.ko
 -kernel/drivers/net/ethernet/stmicro/stmmac/dwmac-sunxi.ko
@@ -285,8 +297,10 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.ko
 -kernel/drivers/perf/hisilicon/hisi_uncore_uc_pmu.ko
 -kernel/drivers/perf/hisilicon/hns3_pmu.ko
++kernel/drivers/irqchip/irq-bcm2712-mip.ko
 +kernel/drivers/irqchip/irq-imx-mu-msi.ko
 +kernel/drivers/input/misc/uinput.ko
++kernel/drivers/leds/led-class-multicolor.ko
 +kernel/drivers/mailbox/bcm-flexrm-mailbox.ko
 +kernel/drivers/hwmon/i5k_amb.ko
  kernel/drivers/scsi/fcoe/libfcoe.ko
@@ -315,18 +329,30 @@ index 6c48a7465..95c3ee669 100644
 -kernel/drivers/usb/serial/cp210x.ko
 -kernel/drivers/usb/serial/ftdi_sio.ko
 -kernel/drivers/usb/serial/pl2303.ko
+-kernel/drivers/vdpa/mlx5/mlx5_vdpa.ko
+-kernel/drivers/vdpa/octeon_ep/octep_vdpa.ko
+-kernel/drivers/vdpa/solidrun/snet_vdpa.ko
+-kernel/drivers/vdpa/vdpa_sim/vdpa_sim_blk.ko
+-kernel/drivers/vdpa/vdpa_sim/vdpa_sim_net.ko
+-kernel/drivers/vdpa/vdpa_sim/vdpa_sim.ko
+-kernel/drivers/vdpa/vdpa_user/vduse.ko
+-kernel/drivers/vdpa/vdpa.ko
+-kernel/drivers/vdpa/virtio_pci/vp_vdpa.ko
 -kernel/drivers/vfio/pci/vfio-pci-core.ko
 +kernel/drivers/thunderbolt/thunderbolt.ko
  kernel/drivers/vfio/pci/vfio-pci.ko
 -kernel/drivers/vfio/vfio_iommu_type1.ko
 +kernel/drivers/vfio/pci/vfio-pci-core.ko
  kernel/drivers/vfio/vfio.ko
+-kernel/drivers/vhost/vhost_vdpa.ko
+-kernel/drivers/vhost/vringh.ko
 -kernel/drivers/virtio/virtio_balloon.ko
 -kernel/drivers/virtio/virtio_input.ko
 -kernel/drivers/virtio/virtio_mmio.ko
 -kernel/drivers/virtio/virtio_pci_legacy_dev.ko
 -kernel/drivers/virtio/virtio_pci_modern_dev.ko
 -kernel/drivers/virtio/virtio_pci.ko
+-kernel/drivers/virtio/virtio_vdpa.ko
 +kernel/drivers/vfio/vfio_iommu_type1.ko
 +kernel/drivers/usb/class/cdc-wdm.ko
 +kernel/drivers/usb/serial/usb_wwan.ko
@@ -341,6 +367,7 @@ index 6c48a7465..95c3ee669 100644
 +kernel/drivers/md/dm-raid.ko
 +kernel/drivers/md/dm-cache.ko
 +kernel/drivers/md/dm-cache-smq.ko
++kernel/drivers/md/dm-integrity.ko
 +kernel/drivers/dma/bcm-sba-raid.ko
 +kernel/drivers/uio/uio.ko
 +kernel/drivers/uio/uio_pci_generic.ko
@@ -364,12 +391,12 @@ index 6c48a7465..95c3ee669 100644
 +kernel/drivers/media/v4l2-core/v4l2-dv-timings.ko
 +kernel/drivers/media/v4l2-core/videodev.ko
 +kernel/drivers/media/mc/mc.ko
-+kernel/arch/arm64/lib/xor-neon.ko
 +kernel/lib/raid6/raid6_pq.ko
  kernel/lib/objagg.ko
  kernel/lib/parman.ko
 -kernel/lib/raid6/raid6_pq.ko
 -kernel/net/ipv4/ip_gre.ko
+-kernel/net/ipv6/ip6_gre.ko
 -kernel/net/openvswitch/vport-gre.ko
 -kernel/net/tls/tls.ko
 +kernel/fs/btrfs/btrfs.ko
@@ -383,8 +410,8 @@ index 6c48a7465..95c3ee669 100644
 +kernel/sound/soc/snd-soc-core.ko
 +kernel/sound/soundcore.ko
  modules.builtin
--modules.builtin.modinfo
--modules.order
+ modules.builtin.modinfo
+ modules.order
 -- 
 2.50.1 (Apple Git-155)
 
