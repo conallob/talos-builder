@@ -61,7 +61,11 @@ fi
 cd "$REPO_ROOT"
 
 # Determine which targets to run
-TARGETS=("${@:-checkouts patches kernel overlay installer}")
+if [[ $# -gt 0 ]]; then
+  TARGETS=("$@")
+else
+  TARGETS=(checkouts patches kernel overlay installer)
+fi
 
 echo "==> Running targets: ${TARGETS[*]}"
 echo "    Registry: $REGISTRY/$REGISTRY_USERNAME"
