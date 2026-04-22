@@ -82,6 +82,21 @@ else
   TARGETS=(checkouts patches kernel overlay installer)
 fi
 
+# Guard: if any target needs the checkouts but they're missing, run checkouts first.
+NEEDS_CHECKOUTS=false
+for t in "${TARGETS[@]}"; do
+  [[ "$t" == patches || "$t" == kernel || "$t" == overlay || "$t" == installer ]] && NEEDS_CHECKOUTS=true
+done
+if $NEEDS_CHECKOUTS; then
+  for dir in checkouts/pkgs checkouts/talos checkouts/sbc-raspberrypi5; do
+    if [[ ! -d "$REPO_ROOT/$dir/.git" ]]; then
+      echo "==> checkouts missing — running 'make checkouts' first"
+      make checkouts
+      break
+    fi
+  done
+fi
+
 echo "==> Running targets: ${TARGETS[*]}"
 echo "    Registry: $REGISTRY/$REGISTRY_USERNAME"
 echo ""
