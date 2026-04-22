@@ -19,12 +19,27 @@ REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PODMAN_SOCK="$HOME/.local/share/containers/podman/machine/podman.sock"
 
 # --- Prerequisites check ---
+
+# Prefer GNU make (required by pkgs/talos Makefiles) over BSD make from Xcode.
+# Install with: brew install make
+GNUMAKE_PATH="$(brew --prefix)/opt/make/libexec/gnubin"
+if [[ -d "$GNUMAKE_PATH" ]]; then
+  export PATH="$GNUMAKE_PATH:$PATH"
+fi
+
 for cmd in docker crane git make; do
   if ! command -v "$cmd" &>/dev/null; then
     echo "ERROR: '$cmd' not found. Run ./local-build-setup.sh first."
     exit 1
   fi
 done
+
+# Verify we have GNU make, not BSD make
+if ! make --version 2>/dev/null | grep -q "GNU Make"; then
+  echo "ERROR: GNU make is required but only BSD make was found."
+  echo "       Install it with: brew install make"
+  exit 1
+fi
 
 if [[ ! -S "$PODMAN_SOCK" ]]; then
   echo "ERROR: Podman socket not found at $PODMAN_SOCK"

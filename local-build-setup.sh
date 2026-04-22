@@ -25,8 +25,8 @@ if [[ "$STATUS" != "running" ]]; then
 fi
 echo "    Podman machine is running."
 
-echo "==> Installing docker CLI and buildx plugin (client only, no daemon)..."
-brew install docker docker-buildx 2>/dev/null || brew upgrade docker docker-buildx 2>/dev/null || true
+echo "==> Installing dependencies (docker, buildx, crane, GNU make)..."
+brew install docker docker-buildx crane make 2>/dev/null || brew upgrade docker docker-buildx crane make 2>/dev/null || true
 mkdir -p "$HOME/.docker/cli-plugins"
 # Link docker-buildx as a docker CLI plugin
 BUILDX_BIN="$(brew --prefix)/bin/docker-buildx"
@@ -34,8 +34,6 @@ if [[ -f "$BUILDX_BIN" ]]; then
   ln -sf "$BUILDX_BIN" "$HOME/.docker/cli-plugins/docker-buildx"
 fi
 
-echo "==> Installing crane..."
-brew install crane 2>/dev/null || brew upgrade crane 2>/dev/null || true
 
 echo "==> Configuring DOCKER_HOST to use Podman socket..."
 if [[ ! -S "$PODMAN_SOCK" ]]; then
