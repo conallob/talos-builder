@@ -6,7 +6,7 @@
 # If you upgrade to an RPi kernel based on a different Linux major.minor you must
 # also update this tag and regenerate patches/siderolabs/pkgs/0001-…patch.
 # Find the linux_version for a pkgs tag: https://github.com/siderolabs/pkgs/blob/<tag>/Pkgfile
-PKG_VERSION = v1.12.0-50-ga92bed5
+PKG_VERSION = v1.11.0
 
 # TALOS_VERSION is the siderolabs/talos release tag to build against.
 # Latest tags: https://github.com/siderolabs/talos/tags
