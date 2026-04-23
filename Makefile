@@ -1,7 +1,12 @@
-# PKG_VERSION must match the pkgs tag embedded in the Talos release you are targeting.
-# Find it in the upstream Talos Makefile for that tag:
-#   https://github.com/siderolabs/talos/blob/$(TALOS_VERSION)/Makefile  (search PKGS)
-PKG_VERSION = v1.12.0
+# PKG_VERSION controls which siderolabs/pkgs tag is cloned as the kernel build
+# toolchain. For this RPi build it does NOT need to match Talos exactly — instead
+# it must match the Linux kernel major.minor used by the RPi Linux tag set in the
+# pkgs patch (currently stable_20250428 = Linux 6.12.x).  Use a pkgs tag whose
+# upstream linux_version shares the same major.minor (6.12 → v1.11.0).
+# If you upgrade to an RPi kernel based on a different Linux major.minor you must
+# also update this tag and regenerate patches/siderolabs/pkgs/0001-…patch.
+# Find the linux_version for a pkgs tag: https://github.com/siderolabs/pkgs/blob/<tag>/Pkgfile
+PKG_VERSION = v1.12.0-50-ga92bed5
 
 # TALOS_VERSION is the siderolabs/talos release tag to build against.
 # Latest tags: https://github.com/siderolabs/talos/tags

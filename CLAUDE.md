@@ -47,15 +47,31 @@ make REGISTRY=ghcr.io REGISTRY_USERNAME=myuser kernel
 
 ### Find the right PKG_VERSION
 
-`PKG_VERSION` (siderolabs/pkgs) must match what the Talos release was built against.
-Look it up in the upstream Talos Makefile for the target tag:
+> **Important:** this project does **not** simply track the pkgs version that the
+> official Talos release was built against. Standard Talos builds use the upstream
+> Linux kernel; this builder replaces it with the Raspberry Pi Linux fork. The pkgs
+> build toolchain (compilers, Dockerfiles, config format) is tightly coupled to the
+> Linux kernel major.minor version, so `PKG_VERSION` must match the Linux
+> major.minor used by the RPi kernel tag set in the pkgs patch — **not** the Talos
+> release's pkgs version.
 
+Current mapping:
+
+| RPi kernel tag | Linux major.minor | Required pkgs tag |
+|----------------|-------------------|-------------------|
+| `stable_20250428` | 6.12.x | `v1.11.0` |
+
+To find which Linux version a pkgs tag uses, check its `Pkgfile`:
 ```
-# In your browser or with curl:
-https://github.com/siderolabs/talos/blob/vX.Y.Z/Makefile
-# Search the page for "PKGS" — look for a line like:
-#   PKGS ?= v1.11.0
+https://github.com/siderolabs/pkgs/blob/<pkgs-tag>/Pkgfile
+# look for: linux_version: X.Y.Z
 ```
+
+When upgrading to a new RPi kernel tag that bumps the Linux major.minor (e.g. 6.12 →
+6.17), you must also:
+1. Find a pkgs tag whose `linux_version` shares that major.minor.
+2. Regenerate `patches/siderolabs/pkgs/0001-…patch` against the new pkgs tag
+   (the Pkgfile context lines and the entire `config-arm64` will be different).
 
 ### Patch-level release (e.g. v1.12.5 → v1.12.6)
 
