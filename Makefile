@@ -1,4 +1,10 @@
+# PKG_VERSION must match the pkgs tag embedded in the Talos release you are targeting.
+# Find it in the upstream Talos Makefile for that tag:
+#   https://github.com/siderolabs/talos/blob/$(TALOS_VERSION)/Makefile  (search PKGS)
 PKG_VERSION = v1.12.0
+
+# TALOS_VERSION is the siderolabs/talos release tag to build against.
+# Latest tags: https://github.com/siderolabs/talos/tags
 TALOS_VERSION = v1.12.6
 SBCOVERLAY_VERSION = main
 

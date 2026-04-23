@@ -45,13 +45,55 @@ make REGISTRY=ghcr.io REGISTRY_USERNAME=myuser kernel
 
 ## Upgrading to a new Talos release
 
+### Find the right PKG_VERSION
+
+`PKG_VERSION` (siderolabs/pkgs) must match what the Talos release was built against.
+Look it up in the upstream Talos Makefile for the target tag:
+
+```
+# In your browser or with curl:
+https://github.com/siderolabs/talos/blob/vX.Y.Z/Makefile
+# Search the page for "PKGS" — look for a line like:
+#   PKGS ?= v1.11.0
+```
+
+### Patch-level release (e.g. v1.12.5 → v1.12.6)
+
+These are low-risk. The kernel config and module list rarely change between patch releases.
+
+1. Update `Makefile`:
+   ```
+   PKG_VERSION   = <pkgs tag from Talos Makefile>
+   TALOS_VERSION = v1.12.6
+   ```
+
+2. Re-apply patches to verify they still apply cleanly:
+   ```
+   make clean checkouts patches
+   ```
+   If both patches apply without error, proceed directly to step 4.
+   If either fails, follow the minor/major release steps below.
+
+3. **Commit, tag, and push**:
+   ```
+   git commit -am "Bump to vX.Y.Z"
+   git tag vX.Y.Z
+   git push origin main --tags
+   ```
+   CI triggers on `v*.*.*` tags and publishes images + a GitHub Release.
+
+### Minor or major release (e.g. v1.12.x → v1.13.x)
+
+The upstream kernel config and/or `hack/modules-arm64.txt` are more likely to have
+changed. Follow the full process:
+
 1. **Clean up** any previous checkout:
    ```
    make clean
    ```
 
 2. **Update versions** in `Makefile`:
-   - Set `PKG_VERSION` to the matching `siderolabs/pkgs` tag
+   - Set `PKG_VERSION` to the matching `siderolabs/pkgs` tag (see above)
    - Set `TALOS_VERSION` to the new `siderolabs/talos` tag
 
 3. **Clone the new checkouts**:
@@ -69,7 +111,14 @@ make REGISTRY=ghcr.io REGISTRY_USERNAME=myuser kernel
    If `patches-talos` fails → `hack/modules-arm64.txt` changed upstream; regenerate
    the patch (see section below).
 
-5. **Commit, tag, and push** to trigger CI:
+5. **After patches apply cleanly**, review the diff for the new Talos release:
+   - New kernel modules added upstream may be BCM/RPi-relevant (keep them) or
+     x86/server-only (drop them from `modules-arm64.txt`).
+   - Check the pkgs config diff: any module changed from `=m` to `=y` must be
+     removed from `modules-arm64.txt`; any new `=m` module that is RPi-relevant
+     should be added.
+
+6. **Commit, tag, and push** to trigger CI:
    ```
    git commit -am "Bump to vX.Y.Z"
    git tag vX.Y.Z
