@@ -5,13 +5,13 @@ Subject: [PATCH] Patched for Raspberry Pi 5
 
 ---
  hack/modules-arm64.txt | 363 ++++++++++++++++++-----------------------
- 1 file changed, 159 insertions(+), 204 deletions(-)
+ 1 file changed, 157 insertions(+), 204 deletions(-)
 
 diff --git a/hack/modules-arm64.txt b/hack/modules-arm64.txt
 index 8df29effd..c21895ae3 100644
 --- a/hack/modules-arm64.txt
 +++ b/hack/modules-arm64.txt
-@@ -1,238 +1,193 @@
+@@ -1,238 +1,191 @@
 +modules.builtin.bin
 +modules.builtin.modinfo
 +modules.builtin.alias.bin
@@ -296,7 +296,6 @@ index 8df29effd..c21895ae3 100644
 -kernel/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.ko
 -kernel/drivers/perf/hisilicon/hisi_uncore_uc_pmu.ko
 -kernel/drivers/perf/hisilicon/hns3_pmu.ko
-+kernel/drivers/irqchip/irq-bcm2712-mip.ko
 +kernel/drivers/irqchip/irq-imx-mu-msi.ko
 +kernel/drivers/input/misc/uinput.ko
 +kernel/drivers/mailbox/bcm-flexrm-mailbox.ko
@@ -380,7 +379,6 @@ index 8df29effd..c21895ae3 100644
 +kernel/drivers/perf/hisilicon/hisi_uncore_sllc_pmu.ko
 +kernel/drivers/block/nbd.ko
 +kernel/drivers/media/usb/uvc/uvcvideo.ko
-+kernel/drivers/media/common/uvc.ko
 +kernel/drivers/media/common/videobuf2/videobuf2-vmalloc.ko
 +kernel/drivers/media/common/videobuf2/videobuf2-memops.ko
 +kernel/drivers/media/common/videobuf2/videobuf2-common.ko
