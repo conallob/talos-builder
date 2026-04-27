@@ -10,7 +10,7 @@ PKG_VERSION = v1.11.0
 
 # TALOS_VERSION is the siderolabs/talos release tag to build against.
 # Latest tags: https://github.com/siderolabs/talos/tags
-TALOS_VERSION = v1.12.6
+TALOS_VERSION = v1.12.7
 SBCOVERLAY_VERSION = main
 
 REGISTRY ?= ghcr.io
